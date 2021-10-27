@@ -9,21 +9,115 @@ using namespace std;
 struct boat {
     short length;
     short total_nr;
+    char name[15];
 };
 
-boat carrier = {5, 1};
-boat battleship = {4, 2};
-boat cruiser = {3, 3};
-boat destroyer = {2, 4};
+const short boat_types = 4;
+boat boats[boat_types] = {{5,1,"carrier"}, {4,2,"battleship"}, {3,3,"cruiser"}, {2,4,"destroyer"}};
 
-int GenerateRandom(int low = 0, int sup = 10)
+int GenerateRandom(int low = 0, int sup = 10);
+void RandomArrangement(int masiv[10][10]);
+bool CheckColision(int masiv[10][10], int x, int y, boat corabie, int orientation);
+void draw_field(int masiv[10][10], char * s);
+void EnterBoat(int masiv[10][10], int x, int y, boat corabie, int orientation);
+
+
+int main()
 {
-    return rand()%(sup-lower) + lower;
+    srand(time(0));
+    int masiv[10][10] = {{0,0,0,0,0,0,0,0,0,0},
+                         {0,0,0,0,0,0,0,0,0,0},
+                         {0,0,0,0,0,0,0,0,0,0},
+                         {0,0,0,0,0,0,0,0,0,0},
+                         {0,0,0,0,0,0,0,0,0,0},
+                         {0,0,0,0,0,0,0,0,0,0},
+                         {0,0,0,0,0,0,0,0,0,0},
+                         {0,0,0,0,0,0,0,0,0,0},
+                         {0,0,0,0,0,0,0,0,0,0},
+                         {0,0,0,0,0,0,0,0,0,0}};
+    RandomArrangement(masiv);
+    draw_field(masiv, "ENEMY FIELD");
+
+    return 0;
+}
+
+bool CheckColision(int masiv[10][10], int x, int y, boat corabie, int orientation)
+{
+    if(orientation == 0)
+    {
+        if(x + corabie.length > 9)
+            return true;
+        else
+        {
+            for(int i = x; i < x + corabie.length+1; i++)
+            {
+                if(masiv[i][y] != 0)
+                    if(y == 0)
+                        if(masiv[i][y + 1] != 0)
+                            return true;
+                    else if(y == 9)
+                        if(masiv[i][y - 1] != 0)
+                            return true;
+                    else
+                        if(masiv[i][y + 1] != 0 || masiv[i][y - 1] != 0)
+                            return true;
+            }
+        }
+    }else
+    {
+        if(y + corabie.length > 9)
+            return true;
+        else
+        {
+            for(int i = y; i < y+corabie.length+1; i++)
+            {
+                if(masiv[x][i] != 0)
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+void EnterBoat(int masiv[10][10], int x, int y, boat corabie, int orientation)
+{
+    if(orientation)
+    {
+        for(int i = y; i < y + corabie.length; i++)
+            masiv[x][i] = 1;
+    }else
+    {
+        for(int i = x; i < x + corabie.length; i++)
+            masiv[i][y] = 1;
+    }
 }
 
 void RandomArrangement(int masiv[10][10])
 {
+    int randomX, randomY, randomOrientation;
+    for(int i = 0; i < boat_types; i++)
+    {
+        int k = 0;
+        while(k < boats[i].total_nr)
+        {
+            randomX = GenerateRandom();
+            randomY = GenerateRandom();
+            randomOrientation = GenerateRandom(0, 2);
+            while(CheckColision(masiv, randomX, randomY, boats[i], randomOrientation))
+            {
+                randomX = GenerateRandom();
+                randomY = GenerateRandom();
+                randomOrientation = GenerateRandom(0, 2);
+            }
+            EnterBoat(masiv, randomX, randomY, boats[i], randomOrientation);
+            k++;
+        }
+    }
+}
 
+int GenerateRandom(int low, int sup)
+{
+    return rand()%(sup-low) + low;
 }
 
 void draw_field(int masiv[10][10], char * s)
@@ -51,23 +145,4 @@ void draw_field(int masiv[10][10], char * s)
         }
         cout << endl;
     }
-}
-
-int main()
-{
-    srand(time(0));
-    int masiv[10][10] = {{0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,1,0,0,0,0},
-                         {0,0,0,0,0,1,0,0,0,0},
-                         {0,0,0,0,0,2,0,2,1,2},
-                         {0,0,0,0,0,1,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0}};
-
-    draw_field(masiv, "ENEMY FIELD");
-
-    return 0;
 }
