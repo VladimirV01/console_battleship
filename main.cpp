@@ -45,37 +45,27 @@ bool CheckColision(int masiv[10][10], int x, int y, boat corabie, int orientatio
 {
     if(orientation == 0)
     {
-        if(x + corabie.length > 9)
+        if((x + corabie.length > 9) || (x > 0 && masiv[x-1][y] != 0) || (x + corabie.length < 9 && masiv[x+corabie.length + 1][y] != 0))
             return true;
-        else
+
+        for(int i = x; i < x + corabie.length+1; i++)
         {
-            for(int i = x; i < x + corabie.length+1; i++)
-            {
-                if(masiv[i][y] != 0)
-                    if(y == 0)
-                        if(masiv[i][y + 1] != 0)
-                            return true;
-                    else if(y == 9)
-                        if(masiv[i][y - 1] != 0)
-                            return true;
-                    else
-                        if(masiv[i][y + 1] != 0 || masiv[i][y - 1] != 0)
-                            return true;
-            }
-        }
-    }else
-    {
-        if(y + corabie.length > 9)
-            return true;
-        else
-        {
-            for(int i = y; i < y+corabie.length+1; i++)
-            {
-                if(masiv[x][i] != 0)
-                    return true;
-            }
+             if((masiv[i][y] != 0) || (y > 0 && masiv[i][y - 1] != 0) || (y < 9 && masiv[i][y + 1] != 0))
+                return true;
         }
     }
+    else
+    {
+        if((y + corabie.length > 9) || (y > 0 && masiv[x][y-1] != 0) || (y + corabie.length < 9 && masiv[x][y+corabie.length + 1] != 0))
+            return true;
+
+        for(int i = y; i < y + corabie.length+1; i++)
+        {
+             if((masiv[x][i] != 0) || (x > 0 && masiv[x - 1][i] != 0) || (x < 9 && masiv[x + 1][i] != 0))
+                return true;
+        }
+    }
+
     return false;
 }
 
