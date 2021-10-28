@@ -17,12 +17,16 @@ struct boat {
 const short boat_types = 4;
 boat boats[boat_types] = {{5,1,"Carrier"}, {4,2,"Battleship"}, {3,3,"Cruiser"}, {2,4,"Destroyer"}};
 
+//_______________PROTOTYPES________________________________________________________
 int GenerateRandom(int low = 0, int sup = 10);
 void RandomArrangement(int masiv[10][10]);
 bool CheckColision(int masiv[10][10], int x, int y, boat corabie, int orientation);
 void draw_field(int masiv[10][10], char * s);
 void EnterBoat(int masiv[10][10], int x, int y, boat corabie, int orientation);
 void ManualArrangement(int masiv[10][10]);
+int ShowMenu();
+void Shoot();
+//_________________________________________________________________________________
 
 int main()
 {
@@ -47,19 +51,77 @@ int main()
                                {0,0,0,0,0,0,0,0,0,0},
                                {0,0,0,0,0,0,0,0,0,0},
                                {0,0,0,0,0,0,0,0,0,0}};
-    RandomArrangement(player_field);
+    //RandomArrangement(player_field);
+    //draw_field(player_field, "PLAYER FIELD");
+
+    //RandomArrangement(enemy_field);
+    //draw_field(enemy_field, "ENEMY FIELD");
+    //ManualArrangement(player_field);
+
+    if (ShowMenu() == 1)
+    {
+        RandomArrangement(player_field);
+    }
+    else
+    {
+        ManualArrangement(player_field);
+    }
     draw_field(player_field, "PLAYER FIELD");
 
-    RandomArrangement(enemy_field);
-    draw_field(enemy_field, "ENEMY FIELD");
-    //ManualArrangement(player_field);
     return 0;
+}
+
+void Shoot()
+{
+    int x, y;
+    char col;
+    bool valid_data;
+
+    do
+    {
+        valid_data = true;
+        cout << "Enter the row: ";
+        cin >> x;
+        cout << "Enter the column: ";
+        cin >> col;
+        x--;
+        y = col - 65;
+
+        if(x < 0 || x > 9)
+        {
+            cout << "\n****************************\n";
+            cout << "Wrong value for Row entered.";
+            cout << "\n****************************\n";
+            valid_data = false;
+        }
+        if(y < 0 || y > 9 && valid_data)
+        {
+            cout << "\n****************************\n";
+            cout << "Wrong value for Column entered.";
+            cout << "\n****************************\n";
+            valid_data = false;
+        }
+    } while(!valid_data);
+
+
+}
+
+int ShowMenu()
+{
+    int choice;
+    do
+    {
+        cout << "\t\t\tMENU\n\n";
+        cout << "\t\tMetoda de aranjare a corabiilor \n\t\t(1 pentru random; 2 pentru manual): ";
+        cin >> choice;
+    } while (choice != 1 && choice != 2);
+    return choice;
 }
 
 bool CheckColision(int masiv[10][10], int x, int y, boat corabie, int orientation)
 {
     //Debug
-    cout << x << y << orientation << endl;
+    //cout << x << y << orientation << endl;
     if(orientation == 0)
     {
         if((x + corabie.length > 10) || (x > 0 && masiv[x-1][y] != 0) || (x + corabie.length < 10 && masiv[x+corabie.length][y] != 0))
@@ -99,7 +161,8 @@ void EnterBoat(int masiv[10][10], int x, int y, boat corabie, int orientation)
     {
         for(int i = y; i < y + corabie.length; i++)
             masiv[x][i] = 1;
-    }else
+    }
+    else
     {
         for(int i = x; i < x + corabie.length; i++)
             masiv[i][y] = 1;
@@ -108,8 +171,7 @@ void EnterBoat(int masiv[10][10], int x, int y, boat corabie, int orientation)
 
 void ManualArrangement(int masiv[10][10])
 {
-    int placed_carriers = 0, placed_battleships = 0, placed_cruisers = 0, placed_destroyers = 0;
-    int placed_boats[boat_types] = {placed_carriers, placed_battleships, placed_cruisers, placed_destroyers};
+    int placed_boats[boat_types] = {0, 0, 0, 0};
     short choice, x = 0, y = 0, orientation = 0;
     char col;
     bool valid_data, all_boats_placed;
@@ -155,7 +217,7 @@ void ManualArrangement(int masiv[10][10])
             }
             else
             {
-                 x--;
+                x--;
                 y = col - 65;
 
                 if(y < 0 || y > 9)
@@ -215,9 +277,9 @@ void ManualArrangement(int masiv[10][10])
         }
     } while (!all_boats_placed);
 
-    cout << "\n\nRezultatul aranjarii campului este: " << endl;
-    draw_field(masiv, "PLAYER FIELD");
-    getch();
+    //cout << "\n\nRezultatul aranjarii campului este: " << endl;
+    //draw_field(masiv, "PLAYER FIELD");
+    //getch();
 }
 
 void RandomArrangement(int masiv[10][10])
@@ -252,8 +314,8 @@ void draw_field(int masiv[10][10], char * s)
 {
     const int cols = 10;
     const int rows = 10;
-    cout << "\t    " << s << "\n\n";
-    cout << "\t";
+    cout << "\t\t\t    " << s << "\n\n";
+    cout << "\t\t\t";
     for(int i = 0; i < cols; i++)
     {
         cout << char(65 + i) << " ";
@@ -261,7 +323,7 @@ void draw_field(int masiv[10][10], char * s)
     cout << endl;
     for(int i = 0; i < cols; i++)
     {
-        cout << i+1 << "\t";
+        cout <<"\t\t" << i+1 << "\t";
         for(int j = 0; j < rows; j++)
         {
             if(masiv[i][j] == 0)
