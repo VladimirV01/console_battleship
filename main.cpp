@@ -3,6 +3,8 @@
 #include <iostream>
 #include <ctime>
 #include <cstring>
+#include <conio.h>
+#include <limits>
 
 using namespace std;
 
@@ -13,53 +15,75 @@ struct boat {
 };
 
 const short boat_types = 4;
-boat boats[boat_types] = {{5,1,"carrier"}, {4,2,"battleship"}, {3,3,"cruiser"}, {2,4,"destroyer"}};
+boat boats[boat_types] = {{5,1,"Carrier"}, {4,2,"Battleship"}, {3,3,"Cruiser"}, {2,4,"Destroyer"}};
 
 int GenerateRandom(int low = 0, int sup = 10);
 void RandomArrangement(int masiv[10][10]);
 bool CheckColision(int masiv[10][10], int x, int y, boat corabie, int orientation);
 void draw_field(int masiv[10][10], char * s);
 void EnterBoat(int masiv[10][10], int x, int y, boat corabie, int orientation);
-
+void ManualArrangement(int masiv[10][10]);
 
 int main()
 {
     srand(time(0));
-    int masiv[10][10] = {{0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0},
-                         {0,0,0,0,0,0,0,0,0,0}};
-    RandomArrangement(masiv);
-    draw_field(masiv, "ENEMY FIELD");
+    int player_field[10][10] = {{0,0,0,0,0,0,0,0,0,0},
+                                {0,0,0,0,0,0,0,0,0,0},
+                                {0,0,0,0,0,0,0,0,0,0},
+                                {0,0,0,0,0,0,0,0,0,0},
+                                {0,0,0,0,0,0,0,0,0,0},
+                                {0,0,0,0,0,0,0,0,0,0},
+                                {0,0,0,0,0,0,0,0,0,0},
+                                {0,0,0,0,0,0,0,0,0,0},
+                                {0,0,0,0,0,0,0,0,0,0},
+                                {0,0,0,0,0,0,0,0,0,0}};
+    int enemy_field[10][10] = {{0,0,0,0,0,0,0,0,0,0},
+                               {0,0,0,0,0,0,0,0,0,0},
+                               {0,0,0,0,0,0,0,0,0,0},
+                               {0,0,0,0,0,0,0,0,0,0},
+                               {0,0,0,0,0,0,0,0,0,0},
+                               {0,0,0,0,0,0,0,0,0,0},
+                               {0,0,0,0,0,0,0,0,0,0},
+                               {0,0,0,0,0,0,0,0,0,0},
+                               {0,0,0,0,0,0,0,0,0,0},
+                               {0,0,0,0,0,0,0,0,0,0}};
+    RandomArrangement(player_field);
+    draw_field(player_field, "PLAYER FIELD");
 
+    RandomArrangement(enemy_field);
+    draw_field(enemy_field, "ENEMY FIELD");
+    //ManualArrangement(player_field);
     return 0;
 }
 
 bool CheckColision(int masiv[10][10], int x, int y, boat corabie, int orientation)
 {
+    //Debug
+    cout << x << y << orientation << endl;
     if(orientation == 0)
     {
-        if((x + corabie.length > 9) || (x > 0 && masiv[x-1][y] != 0) || (x + corabie.length < 9 && masiv[x+corabie.length + 1][y] != 0))
-            return true;
-
-        for(int i = x; i < x + corabie.length+1; i++)
+        if((x + corabie.length > 10) || (x > 0 && masiv[x-1][y] != 0) || (x + corabie.length < 10 && masiv[x+corabie.length][y] != 0))
         {
-             if((masiv[i][y] != 0) || (y > 0 && masiv[i][y - 1] != 0) || (y < 9 && masiv[i][y + 1] != 0))
+            //Debug
+            //cout << "Here" << endl;
+            return true;
+        }
+        for(int i = x; i < x + corabie.length; i++)
+        {
+            if((masiv[i][y] != 0) || (y > 0 && masiv[i][y - 1] != 0) || (y < 9 && masiv[i][y + 1] != 0))
+            {
+                //Debug
+                //cout << "Here1" << endl;
                 return true;
+            }
         }
     }
     else
     {
-        if((y + corabie.length > 9) || (y > 0 && masiv[x][y-1] != 0) || (y + corabie.length < 9 && masiv[x][y+corabie.length + 1] != 0))
+        if((y + corabie.length > 10) || (y > 0 && masiv[x][y-1] != 0) || (y + corabie.length < 10 && masiv[x][y+corabie.length] != 0))
             return true;
 
-        for(int i = y; i < y + corabie.length+1; i++)
+        for(int i = y; i < y + corabie.length; i++)
         {
              if((masiv[x][i] != 0) || (x > 0 && masiv[x - 1][i] != 0) || (x < 9 && masiv[x + 1][i] != 0))
                 return true;
@@ -80,6 +104,120 @@ void EnterBoat(int masiv[10][10], int x, int y, boat corabie, int orientation)
         for(int i = x; i < x + corabie.length; i++)
             masiv[i][y] = 1;
     }
+}
+
+void ManualArrangement(int masiv[10][10])
+{
+    int placed_carriers = 0, placed_battleships = 0, placed_cruisers = 0, placed_destroyers = 0;
+    int placed_boats[boat_types] = {placed_carriers, placed_battleships, placed_cruisers, placed_destroyers};
+    short choice, x = 0, y = 0, orientation = 0;
+    char col;
+    bool valid_data, all_boats_placed;
+
+    do
+    {
+        system("cls");
+
+        draw_field(masiv, "PLAYER FIELD");
+
+        cout <<"\n\nYou placed:  " << endl;
+        for(int i = 0; i < boat_types; i++)
+        {
+            cout << placed_boats[i] <<" " << boats[i].name << " (" << boats[i].length << ") out of " << boats[i].total_nr << endl;
+        }
+
+        all_boats_placed = true;
+
+        do
+        {
+            valid_data = true;
+            cout << "\n\nWhat boat do you want to place now?" << endl;
+            cout << "1 - Carrier (5 squares)"<< endl;
+            cout << "2 - Battleship (4 squares)"<< endl;
+            cout << "3 - Cruiser (3 squares)"<< endl;
+            cout << "4 - Destroyesr (2 squares)"<< endl;
+            cin >> choice;
+            cout << "\n\nEnter the coordinates of the head of the boat." << endl;
+            cout << " Row = ";
+            cin >> x;
+            cout << " Column = ";
+            cin >> col;
+            cout << "\n\nEnter orientation of the boat. (1 for horizontal and 0 for vertical): ";
+            cin >> orientation;
+            if(cin.fail())
+            {//Check if the entered values are of different types and cin is in fail state.
+                cout << "\n One of the values you entered is of wrong type. \n";
+                valid_data = false;
+                //Clear fail state
+                cin.clear();
+                //Ignore bad input.
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
+            else
+            {
+                 x--;
+                y = col - 65;
+
+                if(y < 0 || y > 9)
+                {//Check collision with upper and lower boundaries
+                    cout << "\n****************************\n";
+                    cout << "Wrong value for Row entered.";
+                    cout << "\n****************************\n";
+                    valid_data = false;
+                }
+                if((x < 0 || x > 9) && valid_data)
+                {//Check collision with left and right boundaries
+                    cout << "\n****************************\n";
+                    cout << "Wrong value for Column entered.";
+                    cout << "\n****************************\n";
+                    valid_data = false;
+                }
+                if((orientation != 0 && orientation != 1) && valid_data)
+                {//Check orintation entered
+                    cout << "\n****************************\n";
+                    cout << "Wrong value for Orientation entered.";
+                    cout << "\n****************************\n";
+                    valid_data = false;
+                }
+                if((choice < 1 || choice > 4) && valid_data)
+                {//Check if boat choice is in the valid range
+                    cout << "\n****************************\n";
+                    cout << "Wrong boat selected.";
+                    cout << "\n****************************\n";
+                    valid_data = false;
+                }
+                if((placed_boats[choice - 1] + 1 > boats[choice - 1].total_nr) && valid_data)
+                {//Check if the number of placed boats does not exceed limits.
+                    cout << "\n****************************\n";
+                    cout << "You aldready placed all the boats of this type.";
+                    cout << "\n****************************\n";
+                    valid_data = false;
+                }
+                if(valid_data)
+                    if(CheckColision(masiv, x, y, boats[choice - 1], orientation))
+                    {//Check if the selected parameters can place a boat without collisions.
+                        cout << "\n****************************\n";
+                        cout << "The boat collides with field limits or other boats.";
+                        cout << "\n****************************\n";
+                        valid_data = false;
+                    }
+            }
+        }while(!(valid_data));
+
+        EnterBoat(masiv, x, y, boats[choice - 1], orientation);
+
+        placed_boats[choice - 1]++;
+
+        for(int i = 0; i < boat_types; i++)
+        {
+            if(placed_boats[i] < boats[i].total_nr)
+                all_boats_placed = false;
+        }
+    } while (!all_boats_placed);
+
+    cout << "\n\nRezultatul aranjarii campului este: " << endl;
+    draw_field(masiv, "PLAYER FIELD");
+    getch();
 }
 
 void RandomArrangement(int masiv[10][10])
