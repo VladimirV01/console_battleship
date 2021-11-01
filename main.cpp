@@ -17,6 +17,10 @@ struct boat {
 const short boat_types = 4;
 boat boats[boat_types] = {{5,1,"Carrier"}, {4,2,"Battleship"}, {3,3,"Cruiser"}, {2,4,"Destroyer"}};
 
+int player_shot_squares = 0;
+int pc_shot_squares = 0;
+int total_squares = 30;
+
 //_______________PROTOTYPES________________________________________________________
 int GenerateRandom(int low = 0, int sup = 10);
 void RandomArrangement(int masiv[10][10]);
@@ -25,38 +29,16 @@ void draw_field(int masiv[10][10], char * s);
 void EnterBoat(int masiv[10][10], int x, int y, boat corabie, int orientation);
 void ManualArrangement(int masiv[10][10]);
 int ShowMenu();
-void Shoot();
+bool Shoot(int field[10][10], bool player = false, int x = -1, int y = -1);
+void ProjectEnemyField(int enemy_field[10][10], int show_field[10][10]);
 //_________________________________________________________________________________
 
 int main()
 {
     srand(time(0));
-    int player_field[10][10] = {{0,0,0,0,0,0,0,0,0,0},
-                                {0,0,0,0,0,0,0,0,0,0},
-                                {0,0,0,0,0,0,0,0,0,0},
-                                {0,0,0,0,0,0,0,0,0,0},
-                                {0,0,0,0,0,0,0,0,0,0},
-                                {0,0,0,0,0,0,0,0,0,0},
-                                {0,0,0,0,0,0,0,0,0,0},
-                                {0,0,0,0,0,0,0,0,0,0},
-                                {0,0,0,0,0,0,0,0,0,0},
-                                {0,0,0,0,0,0,0,0,0,0}};
-    int enemy_field[10][10] = {{0,0,0,0,0,0,0,0,0,0},
-                               {0,0,0,0,0,0,0,0,0,0},
-                               {0,0,0,0,0,0,0,0,0,0},
-                               {0,0,0,0,0,0,0,0,0,0},
-                               {0,0,0,0,0,0,0,0,0,0},
-                               {0,0,0,0,0,0,0,0,0,0},
-                               {0,0,0,0,0,0,0,0,0,0},
-                               {0,0,0,0,0,0,0,0,0,0},
-                               {0,0,0,0,0,0,0,0,0,0},
-                               {0,0,0,0,0,0,0,0,0,0}};
-    //RandomArrangement(player_field);
-    //draw_field(player_field, "PLAYER FIELD");
-
-    //RandomArrangement(enemy_field);
-    //draw_field(enemy_field, "ENEMY FIELD");
-    //ManualArrangement(player_field);
+    int player_field[10][10] = {0};
+    int enemy_field[10][10] = {0};
+    int show_field[10][10] = {0};
 
     if (ShowMenu() == 1)
     {
@@ -66,45 +48,110 @@ int main()
     {
         ManualArrangement(player_field);
     }
-    draw_field(player_field, "PLAYER FIELD");
+
+    RandomArrangement(enemy_field);
+
+    bool shot = false;
+    while(player_shot_squares < total_squares && pc_shot_squares < total_squares)
+    {
+        draw_field(player_field, "PLAYER FIELD");
+        draw_field(show_field, "ENEMY FIELD");
+        shot = true;
+        while(shot)
+        {
+            shot = Shoot(enemy_field, true);
+            ProjectEnemyField(enemy_field, show_field);
+            draw_field(show_field, "ENEMY FIELD");
+            getch();
+            system("cls");
+        }
+        shot = true;
+        while(shot)
+        {
+            shot = Shoot(player_field);
+            draw_field(player_field, "PLAYER FIELD");
+            getch();
+            system("cls");
+        }
+    }
+
 
     return 0;
 }
 
-
-
-void Shoot()
+void ProjectEnemyField(int enemy_field[10][10], int show_field[10][10])
 {
-    int x, y;
+    for(int i = 0; i < 10; i++)
+        for(int j = 0; j < 10; j++)
+            if(enemy_field[i][j] == 2 || enemy_field[i][j] == -1)
+                show_field[i][j] = enemy_field[i][j];
+}
+
+bool Shoot(int field[10][10], bool player, int x, int y)
+{
     char col;
     bool valid_data;
-
     do
     {
         valid_data = true;
-        cout << "Enter the row: ";
-        cin >> x;
-        cout << "Enter the column: ";
-        cin >> col;
-        x--;
-        y = (col > 64 && col < 75) ? (col - 65):(col - 97);
-
-        if(x < 0 || x > 9)
+        if(player)
         {
-            cout << "\n****************************\n";
-            cout << "Wrong value for Row entered.";
-            cout << "\n****************************\n";
-            valid_data = false;
+            cout << "Enter the coordinates to shoot (Row, Column): ";
+            cin >> x >> col;
+            x--;
+            y = (col > 64 && col < 75) ? (col - 65):(col - 97);
+        }else
+        {
+            x = GenerateRandom(0, 10);
+            y = GenerateRandom(0, 10);
         }
-        if(y < 0 || y > 9 && valid_data)
+
+        if(player)
         {
-            cout << "\n****************************\n";
-            cout << "Wrong value for Column entered.";
-            cout << "\n****************************\n";
+            if(x < 0 || x > 9)
+            {
+                cout << "\n****************************\n";
+                cout << "Wrong value for Row entered.";
+                cout << "\n****************************\n";
+                valid_data = false;
+            }
+            if(y < 0 || y > 9 && valid_data)
+            {
+                cout << "\n****************************\n";
+                cout << "Wrong value for Column entered.";
+                cout << "\n****************************\n";
+                valid_data = false;
+            }
+        }
+
+        if((field[x][y] == 2) || (field[x][y] == -1)  && valid_data)
+        {
+            if(player)
+            {
+                cout << "\n****************************\n";
+                cout << "WThe selected cell is already shot.";
+                cout << "\n****************************\n";
+            }
             valid_data = false;
         }
     } while(!valid_data);
 
+    if(!player)
+    {
+        cout << "Computer shot " << x + 1 << " , " << char(y + 65) << " square...";
+    }
+
+    if (field[x][y] == 1)
+    {
+        player ? player_shot_squares++ : pc_shot_squares++;
+        field[x][y] = 2;
+        return true;
+    } else
+    {
+        field[x][y] = -1;
+        cout << "And missed!" << endl;
+        return false;
+    }
 
 }
 
@@ -334,6 +381,8 @@ void draw_field(int masiv[10][10], char * s)
                 cout << char(176) << char(176);
             else if (masiv[i][j] == 2)
                 cout << char(178) << char(178);
+            else if (masiv[i][j] == -1)
+                cout << "XX";
         }
         cout << endl;
     }
