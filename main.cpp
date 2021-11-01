@@ -71,6 +71,8 @@ int main()
     return 0;
 }
 
+
+
 void Shoot()
 {
     int x, y;
@@ -85,7 +87,7 @@ void Shoot()
         cout << "Enter the column: ";
         cin >> col;
         x--;
-        y = col - 65;
+        y = (col > 64 && col < 75) ? (col - 65):(col - 97);
 
         if(x < 0 || x > 9)
         {
@@ -218,7 +220,7 @@ void ManualArrangement(int masiv[10][10])
             else
             {
                 x--;
-                y = col - 65;
+                y = (col > 64 && col < 75) ? (col - 65):(col - 97);
 
                 if(y < 0 || y > 9)
                 {//Check collision with upper and lower boundaries
