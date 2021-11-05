@@ -1,10 +1,13 @@
 # depslib dependency file v1.0
-1635365606 source:e:\console battleship\main.cpp
+1636147363 source:e:\console battleship\main.cpp
 	<cmath>
 	<cstdlib>
 	<iostream>
 	<ctime>
 	<cstring>
+	<conio.h>
+	<limits>
+	"SerialPort.h"
 
 1635440697 source:c:\users\user\desktop\console_battleship\main.cpp
 	<cmath>
@@ -14,4 +17,12 @@
 	<cstring>
 	<conio.h>
 	<limits>
+
+1636145896 e:\console battleship\serialport.h
+	<windows.h>
+	<stdio.h>
+	<stdlib.h>
+
+1636145929 source:e:\console battleship\serialport.cpp
+	"SerialPort.h"
 

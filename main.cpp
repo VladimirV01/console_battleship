@@ -6,7 +6,13 @@
 #include <conio.h>
 #include <limits>
 
+#include "SerialPort.h"
+
 using namespace std;
+
+char output[MAX_DATA_LENGTH];
+char *port = "\\\\.\\COM4";
+SerialPort arduino(port);
 
 struct boat {
     short length;
@@ -31,6 +37,7 @@ void ManualArrangement(int masiv[10][10]);
 int ShowMenu();
 bool Shoot(int field[10][10], bool player = false, int x = -1, int y = -1);
 void ProjectEnemyField(int enemy_field[10][10], int show_field[10][10]);
+void SerializeFieldAndSend(int enemy_field[10][10]);
 //_________________________________________________________________________________
 
 int main()
@@ -62,6 +69,7 @@ int main()
             shot = Shoot(enemy_field, true);
             ProjectEnemyField(enemy_field, show_field);
             draw_field(show_field, "ENEMY FIELD");
+            SerializeFieldAndSend(show_field);
             getch();
             system("cls");
         }
@@ -77,6 +85,33 @@ int main()
 
 
     return 0;
+}
+
+void SerializeFieldAndSend(int enemy_field[10][10])
+{
+    int k = 0;
+    for(int i = 0; i < 10; i++)
+    {
+        for(int j = 0; j < 10; j++)
+        {
+            if(enemy_field[i][j] == 0)
+            {
+                output[k] = '0';
+                k++;
+            }else if(enemy_field[i][j] == 2)
+            {
+                output[k] = '2';
+                k++;
+            }else if(enemy_field[i][j] == -1)
+            {
+                output[k] = '9';
+                k++;
+            }
+
+        }
+    }
+    output[k] = '\n';
+    arduino.writeSerialPort(output, MAX_DATA_LENGTH);
 }
 
 void ProjectEnemyField(int enemy_field[10][10], int show_field[10][10])
