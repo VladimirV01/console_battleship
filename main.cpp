@@ -5,6 +5,7 @@
 #include <cstring>
 #include <conio.h>
 #include <limits>
+#include <unistd.h>
 
 #include "SerialPort.h"
 
@@ -90,28 +91,37 @@ int main()
 void SerializeFieldAndSend(int enemy_field[10][10])
 {
     int k = 0;
+    char command[MAX_DATA_LENGTH];
     for(int i = 0; i < 10; i++)
     {
         for(int j = 0; j < 10; j++)
         {
             if(enemy_field[i][j] == 0)
             {
-                output[k] = '0';
+                command[k] = '0';
                 k++;
             }else if(enemy_field[i][j] == 2)
             {
-                output[k] = '2';
+                command[k] = '2';
                 k++;
             }else if(enemy_field[i][j] == -1)
             {
-                output[k] = '9';
+                command[k] = '9';
                 k++;
             }
 
         }
     }
-    output[k] = '\n';
-    arduino.writeSerialPort(output, MAX_DATA_LENGTH);
+    command[k++] = '\n';
+    command[k] = '\0';
+    if(arduino.isConnected())
+    {
+        arduino.writeSerialPort(command, strlen(command));
+        sleep(.5);
+        arduino.readSerialPort(output, MAX_DATA_LENGTH);
+        cout << output;
+    }
+
 }
 
 void ProjectEnemyField(int enemy_field[10][10], int show_field[10][10])
