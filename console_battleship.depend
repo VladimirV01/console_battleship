@@ -9,7 +9,7 @@
 	<limits>
 	"SerialPort.h"
 
-1635440697 source:c:\users\user\desktop\console_battleship\main.cpp
+1636187246 source:c:\users\user\desktop\console_battleship\main.cpp
 	<cmath>
 	<cstdlib>
 	<iostream>
@@ -17,6 +17,8 @@
 	<cstring>
 	<conio.h>
 	<limits>
+	<unistd.h>
+	"SerialPort.h"
 
 1636145896 e:\console battleship\serialport.h
 	<windows.h>
@@ -24,5 +26,13 @@
 	<stdlib.h>
 
 1636145929 source:e:\console battleship\serialport.cpp
+	"SerialPort.h"
+
+1636186330 c:\users\user\desktop\console_battleship\serialport.h
+	<windows.h>
+	<stdio.h>
+	<stdlib.h>
+
+1636186330 source:c:\users\user\desktop\console_battleship\serialport.cpp
 	"SerialPort.h"
 

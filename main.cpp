@@ -39,6 +39,7 @@ int ShowMenu();
 bool Shoot(int field[10][10], bool player = false, int x = -1, int y = -1);
 void ProjectEnemyField(int enemy_field[10][10], int show_field[10][10]);
 void SerializeFieldAndSend(int enemy_field[10][10]);
+void SendToSerial(char * data, int data_length, bool read_answer);
 //_________________________________________________________________________________
 
 int main()
@@ -88,6 +89,20 @@ int main()
     return 0;
 }
 
+void SendToSerial(char * data, int data_length, bool read_answer)
+{
+    if(arduino.isConnected())
+    {
+        arduino.writeSerialPort(data, data_length);
+        sleep(.6);
+        arduino.readSerialPort(output, MAX_DATA_LENGTH);
+        if(read_answer)
+        {
+            cout << output << endl;
+        }
+    }
+}
+
 void SerializeFieldAndSend(int enemy_field[10][10])
 {
     int k = 0;
@@ -114,14 +129,7 @@ void SerializeFieldAndSend(int enemy_field[10][10])
     }
     command[k++] = '\n';
     command[k] = '\0';
-    if(arduino.isConnected())
-    {
-        arduino.writeSerialPort(command, strlen(command));
-        sleep(.5);
-        arduino.readSerialPort(output, MAX_DATA_LENGTH);
-        cout << output;
-    }
-
+    SendToSerial(command, strlen(command), true);
 }
 
 void ProjectEnemyField(int enemy_field[10][10], int show_field[10][10])

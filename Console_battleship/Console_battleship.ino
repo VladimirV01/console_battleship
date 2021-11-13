@@ -31,17 +31,14 @@ void loop() {
 
   String received;
   if (Serial.available() > 0) {
-    // read the incoming byte:
     received = Serial.readStringUntil('\n');
 
-    // say what you got:
-   Serial.print("I received: ");
-   Serial.println(received);
+   Serial.println(received.length());
    if(received.equals("ON"))
    {
     Serial.println("SHIT IS ON");
    }
-  }
+
   for(int i = 0; i < received.length(); i++)
   {
     if(received[i] == '0')
@@ -58,4 +55,6 @@ void loop() {
     }
   }
   FastLED.show();
+  }
+  
 }
