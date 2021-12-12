@@ -36,7 +36,7 @@ void loop() {
    Serial.println(received.length());
    if(received.equals("ON"))
    {
-    Serial.println("SHIT IS ON");
+    Serial.println("It is ON");
    }
 
   for(int i = 0; i < received.length(); i++)
