@@ -40,10 +40,12 @@ bool Shoot(int field[10][10], bool player = false, int x = -1, int y = -1);
 void ProjectEnemyField(int enemy_field[10][10], int show_field[10][10]);
 void SerializeFieldAndSend(int enemy_field[10][10]);
 void SendToSerial(char * data, int data_length, bool read_answer);
+void SendStartCommand();
 //_________________________________________________________________________________
 
 int main()
 {
+    SendStartCommand();
     srand(time(0));
     int player_field[10][10] = {0};
     int enemy_field[10][10] = {0};
@@ -89,7 +91,7 @@ int main()
     return 0;
 }
 
-void SendToSerial(char * data, int data_length, bool read_answer)
+void SendToSerial(char * data, int data_length, bool read_answer=false)
 {
     if(arduino.isConnected())
     {
@@ -129,7 +131,13 @@ void SerializeFieldAndSend(int enemy_field[10][10])
     }
     command[k++] = '\n';
     command[k] = '\0';
-    SendToSerial(command, strlen(command), true);
+    SendToSerial(command, strlen(command));
+}
+
+void SendStartCommand()
+{
+    char command[] = "start";
+    SendToSerial(command, strlen(command));
 }
 
 void ProjectEnemyField(int enemy_field[10][10], int show_field[10][10])
@@ -142,8 +150,8 @@ void ProjectEnemyField(int enemy_field[10][10], int show_field[10][10])
 
 bool Shoot(int field[10][10], bool player, int x, int y)
 {
-    char col;
     bool valid_data;
+    char col;
     do
     {
         valid_data = true;
